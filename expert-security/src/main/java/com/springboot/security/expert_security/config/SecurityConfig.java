@@ -4,8 +4,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.core.GrantedAuthorityDefaults;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -17,6 +20,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity(securedEnabled = true)
 public class SecurityConfig {
 
     @Autowired
@@ -29,6 +33,7 @@ public class SecurityConfig {
 
         //TODO SecurityFilterChain -> é responsável pelas as configurações de autenticação.
         return http
+                .csrf(AbstractHttpConfigurer::disable) //TODO: csrf -> para quando estamos com uma aplicação web
                 .authorizeHttpRequests(customizer -> {
                     customizer.requestMatchers("/public").permitAll();
                     customizer.anyRequest().authenticated();
@@ -62,5 +67,13 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() {
         //TODO: PasswordEncoder -> é responsável pela criptografia da senha dos usuários.
         return new BCryptPasswordEncoder();
+    }
+
+    //TODO: GrantedAuthorityDefaults -> para definir o prefix de uma forma simplificada,
+    // sem passar na classe SimpleGrantedAuthority na classe SenhaMasterAuthenticationProvider.
+
+    @Bean
+    public GrantedAuthorityDefaults grantedAuthorityDefaults(){
+        return new GrantedAuthorityDefaults("");
     }
 }
