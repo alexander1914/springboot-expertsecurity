@@ -1,5 +1,7 @@
 package com.springboot.security.expert_security.config;
 
+import com.springboot.security.expert_security.domain.security.CustomAuthentication;
+import com.springboot.security.expert_security.domain.security.IdentificacaoUsuario;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -24,8 +26,10 @@ public class SenhaMasterAuthenticationProvider implements AuthenticationProvider
         String senhaMaster = "2407";
 
         if (loginMaster.equals(login) && senhaMaster.equals(senha)){
-            return new UsernamePasswordAuthenticationToken("Sou Master", null,
-                    List.of(new SimpleGrantedAuthority("ADMIN")));
+            IdentificacaoUsuario identificacaoUsuario =
+                    new IdentificacaoUsuario("Sou Master", "Master", loginMaster, List.of("ADMIN"));
+
+            return new CustomAuthentication(identificacaoUsuario);
         }
 
         return null;

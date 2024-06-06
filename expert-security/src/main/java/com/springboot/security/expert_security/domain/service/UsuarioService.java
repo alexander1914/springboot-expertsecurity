@@ -50,4 +50,17 @@ public class UsuarioService {
         return usuario;
     }
 
+    public Usuario obterUsuarioComPermissoes(String login){
+        Optional<Usuario> usuarioOptional = usuarioRepository.findByLogin(login);
+        if(usuarioOptional.isEmpty()){
+            return null;
+        }
+
+        Usuario usuario = usuarioOptional.get();
+        List<String> permissioes = usuarioGrupoRepository.findPermissioesByUsuario(usuario);
+        usuario.setPermissoes(permissioes);
+
+        return usuario;
+    }
+
 }

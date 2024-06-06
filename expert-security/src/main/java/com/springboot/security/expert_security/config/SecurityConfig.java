@@ -1,6 +1,5 @@
 package com.springboot.security.expert_security.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -23,15 +22,15 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableMethodSecurity(securedEnabled = true)
 public class SecurityConfig {
 
-    @Autowired
-    private SenhaMasterAuthenticationProvider senhaMasterAuthenticationProvider;
-    @Autowired
-    private CustomFilter customFilter;
-
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(
+            HttpSecurity http,
+            SenhaMasterAuthenticationProvider senhaMasterAuthenticationProvider,
+            CustomAuthenticationProvider customAuthenticationProvider,
+            CustomFilter customFilter) throws Exception {
 
         //TODO SecurityFilterChain -> é responsável pelas as configurações de autenticação.
+
         return http
                 .csrf(AbstractHttpConfigurer::disable) //TODO: csrf -> para quando estamos com uma aplicação web
                 .authorizeHttpRequests(customizer -> {
@@ -41,6 +40,7 @@ public class SecurityConfig {
                 .httpBasic(Customizer.withDefaults())
                 .formLogin(Customizer.withDefaults())
                 .authenticationProvider(senhaMasterAuthenticationProvider)
+                .authenticationProvider(customAuthenticationProvider)
                 .addFilterBefore(customFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
